@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "virtual_band"
+version = "0.1.0"
+description = "Acoustic guitar audio driving UJAM virtual instruments"
+requires-python = ">=3.9"
+dependencies = [
+    "sounddevice",
+    "numpy",
+    "scipy",
+    "mido",
+    "python-rtmidi",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]

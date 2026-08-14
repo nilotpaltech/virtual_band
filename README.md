@@ -10,5 +10,24 @@ chord recognition or arrangement logic yet.
 See `AGENTS.md` for agent working rules, `docs/architecture.md` for
 current architecture, `docs/decisions.md` for decision history.
 
-## Running
-(fill in once Task 1 lands — venv setup, how to run the Phase 0 scripts)
+## Setup
+1. Ensure you are using **Python 3.9** (newer versions may not have pre-compiled wheels for all audio libraries).
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv .venv
+   .\.venv\Scripts\activate
+   ```
+3. Install the project requirements:
+   ```bash
+   pip install -e ".[dev]"
+   ```
+
+## Running the Smoke Test
+The first task for Phase 0 is to test the audio input latency floor.
+
+1. Connect your audio interface.
+2. Run the smoke test script:
+   ```bash
+   python audio_io/smoke_test.py
+   ```
+This script uses WASAPI Exclusive Mode to achieve ultra-low latency without requiring ASIO. It will automatically detect your input device and run a 5-second RMS volume check at buffer sizes of 128, 256, and 512 samples to test for dropouts.

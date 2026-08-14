@@ -9,9 +9,9 @@ def main():
     
     # Identify WASAPI host API
     wasapi_hostapi = None
-    for api in sd.query_hostapis():
+    for idx, api in enumerate(sd.query_hostapis()):
         if 'Windows WASAPI' in api['name']:
-            wasapi_hostapi = api['index']
+            wasapi_hostapi = idx
             break
             
     if wasapi_hostapi is None:
@@ -44,7 +44,8 @@ def main():
         return
         
     device_info = sd.query_devices(target_device)
-    print(f"\nTargeting Device: [{target_device}] {device_info['name']}")
+    default_samplerate = int(device_info['default_samplerate'])
+    print(f"\nTargeting Device: [{target_device}] {device_info['name']} at {default_samplerate}Hz")
 
     # Use WASAPI Exclusive mode for lowest latency
     extra_settings = sd.WasapiSettings(exclusive=True)
@@ -73,7 +74,7 @@ def main():
             with sd.InputStream(
                 device=target_device, 
                 channels=1, 
-                samplerate=44100, 
+                samplerate=default_samplerate, 
                 blocksize=blocksize,
                 extra_settings=extra_settings,
                 callback=audio_callback

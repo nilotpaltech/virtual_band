@@ -7,44 +7,47 @@ def main():
     print("Available Audio Devices:")
     print(sd.query_devices())
     
-    # Identify ASIO host API
-    asio_hostapi = None
+    # Identify WASAPI host API
+    wasapi_hostapi = None
     for api in sd.query_hostapis():
-        if 'ASIO' in api['name']:
-            asio_hostapi = api['index']
+        if 'Windows WASAPI' in api['name']:
+            wasapi_hostapi = api['index']
             break
             
-    if asio_hostapi is None:
-        print("\nError: ASIO host API not found on this system.")
+    if wasapi_hostapi is None:
+        print("\nError: WASAPI host API not found on this system.")
         return
 
-    # Find the Komplete Audio 1 ASIO device
+    # Find the Komplete Audio 1 WASAPI device
     target_device = None
     for idx, d in enumerate(sd.query_devices()):
-        if d['hostapi'] == asio_hostapi and 'Komplete Audio' in d['name']:
+        if d['hostapi'] == wasapi_hostapi and 'Komplete Audio' in d['name'] and d['max_input_channels'] > 0:
             target_device = idx
             break
             
     if target_device is None:
-        print("\nWarning: Could not find 'Komplete Audio 1' ASIO device.")
-        print("Available ASIO devices:")
+        print("\nWarning: Could not find 'Komplete Audio 1' WASAPI input device.")
+        print("Available WASAPI input devices:")
         for idx, d in enumerate(sd.query_devices()):
-            if d['hostapi'] == asio_hostapi:
+            if d['hostapi'] == wasapi_hostapi and d['max_input_channels'] > 0:
                 print(f"[{idx}] {d['name']} (In: {d['max_input_channels']})")
         
-        # Fallback to the first available ASIO input device
+        # Fallback to the first available WASAPI input device
         for idx, d in enumerate(sd.query_devices()):
-            if d['hostapi'] == asio_hostapi and d['max_input_channels'] > 0:
+            if d['hostapi'] == wasapi_hostapi and d['max_input_channels'] > 0:
                 target_device = idx
-                print(f"Falling back to ASIO device [{idx}] {d['name']}")
+                print(f"Falling back to WASAPI device [{idx}] {d['name']}")
                 break
                 
     if target_device is None:
-        print("\nError: No ASIO input devices available.")
+        print("\nError: No WASAPI input devices available.")
         return
         
     device_info = sd.query_devices(target_device)
     print(f"\nTargeting Device: [{target_device}] {device_info['name']}")
+
+    # Use WASAPI Exclusive mode for lowest latency
+    extra_settings = sd.WasapiSettings(exclusive=True)
     
     buffer_sizes = [128, 256, 512]
     duration = 5.0  # seconds
@@ -72,6 +75,7 @@ def main():
                 channels=1, 
                 samplerate=44100, 
                 blocksize=blocksize,
+                extra_settings=extra_settings,
                 callback=audio_callback
             ):
                 start_time = time.time()

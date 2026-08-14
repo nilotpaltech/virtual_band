@@ -1,5 +1,6 @@
 # Decisions log (most recent first)
 
+- 2026-08-14 — Buffer size of 128 samples selected for the real-time audio input stream. The smoke test verified stability at 128, 256, and 512 samples under Windows WASAPI Exclusive mode on Komplete Audio 1 with 0 dropouts/xruns; 128 samples is chosen to achieve the lowest possible input latency (~2.67ms at 48kHz).
 - [date] — Phase 0 scope locked: rhythm/timing only, no chords, no
   plugin. Exit criteria: audible live reaction to strumming, with a
   measured latency number, before Phase 1 begins.

@@ -13,6 +13,7 @@ dependencies = [
     "scipy",
     "mido",
     "python-rtmidi",
+    "aubio",
 ]
 
 [project.optional-dependencies]

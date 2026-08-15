@@ -1,4 +1,7 @@
 # Decisions log (most recent first)
+- 2026-08-15 — Root cause of ~300ms perceived delay: Komplete Audio 1 doesn't support multi-client ASIO; Ableton falls back to DirectSound (high output latency) when Python needs simultaneous input access. Fixed by routing both Ableton and Python through KoordASIO (shared-mode ASIO wrapper) instead of native NI driver. Result: ~90ms guitar-to-drum-sound, measured via phone recording. This is now the Phase 0 latency baseline.
+
+- 2026-08-15 — Komplete Audio 1 only supports one ASIO client at a time. Current workaround: Python holds the device via WASAPI exclusive mode, Ableton runs on DirectSound. Tradeoff: Python input latency is good, Ableton output latency may be worse than native ASIO. Revisit if output latency becomes the bottleneck.
 
 - 2026-08-15 — Fine-tuned the energy-based onset detector for acoustic guitar strumming. A threshold of 0.15 combined with a refractory period of 480.0 ms reliably ignores the ringing tail of a chord and registers a single hit per strum without missing quiet strums for the most part. This is not yet perfect.
 
